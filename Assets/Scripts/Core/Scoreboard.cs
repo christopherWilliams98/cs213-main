@@ -10,7 +10,10 @@ public class Scoreboard : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        player1Score = 0;
+        player2Score = 0;
+
+
     }
 
     // Update is called once per frame

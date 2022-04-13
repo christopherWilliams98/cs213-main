@@ -4,16 +4,24 @@ using UnityEngine;
 public class GhostSheepBehavior : AgentBehaviour
 {    
 
-    const float sheepRadius = 3.3f;
-    const float ghostRadius = 5f;
+    const float sheepRadius = 5f;
+    const float ghostRadius = 100f;
     const float sheepSpeed = 2f;
     const float ghostSpeed = 0.4f;
 
     const float minTransformTime = 5.0f;
     const float maxTransformTime = 15.0f;
+    public AudioSource audioSource1;
+    public AudioSource audioSource2;
+    
+    public AudioSource audioSource3;
+
+    private Color32 green = new Color32(26, 255, 0, 255);
+    private Color32 red = new Color32(255, 0, 0, 255); 
 
     public void Start(){
-
+        audioSource1.volume = 0f;
+        audioSource3.volume = 0f;
         this.gameObject.tag = "Sheep";
         Invoke("TransformBehavior", Random.Range(minTransformTime, maxTransformTime));
 
@@ -52,12 +60,12 @@ public class GhostSheepBehavior : AgentBehaviour
             float distanceP1Ghost = Vector3.Distance(player1Positions, ghostPositions);
             float distanceP2Ghost = Vector3.Distance(player2Positions, ghostPositions);
 
-            if(distanceP1Ghost < ghostRadius && distanceP1Ghost < distanceP2Ghost){
+            if(distanceP1Ghost < distanceP2Ghost){
                 horizontal = horizontal - ghostPositions.x + player1Positions.x;
                 vertical = vertical - ghostPositions.z + player1Positions.z;
             }
 
-            else if(distanceP2Ghost < ghostRadius && distanceP2Ghost <= distanceP1Ghost){
+            else if(distanceP2Ghost <= distanceP1Ghost){
                 horizontal = horizontal - ghostPositions.x + player2Positions.x;
                 vertical = vertical - ghostPositions.z + player2Positions.z;
             }
@@ -73,16 +81,28 @@ public class GhostSheepBehavior : AgentBehaviour
 
     void TransformBehavior()
     {
+        audioSource1.volume = 1f;
+
         if(this.gameObject.tag == "Sheep"){
             this.gameObject.tag = "Ghost";
+                audioSource1.Play();
+                agent.SetVisualEffect(0, red, 0);
+            
         }else{
             this.gameObject.tag = "Sheep";
+            audioSource2.Play();
+            agent.SetVisualEffect(0, green, 0);
+
+
         }
+
         Invoke("TransformBehavior", Random.Range(minTransformTime, maxTransformTime));
     }
 
     void OnCollisionEnter(Collision collisionInfo){
         if(this.gameObject.CompareTag("Ghost")){
+            audioSource3.volume = 1f;
+            audioSource3.Play();
             Scoreboard.removePoint(collisionInfo.gameObject.tag);
         }
     }
